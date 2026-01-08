@@ -33,27 +33,28 @@ namespace Quatro.Core
 
         private Tile confirmTile;
 
-        private Phase phase;
+        public static Phase Phase;
 
         private static Tile[][] grid;
 
+        public static bool IsDrawingPhase => Phase is Phase.Player2Draw or Phase.Player1Draw;
 
         public static void ToNextPlacingPhase()
         {
-            if (Instance.phase == Phase.Player1Place || Instance.phase == Phase.Player2Place)
+            if (Phase == Phase.Player1Place || Phase == Phase.Player2Place)
             {
                 throw new Exception("Going into placing phase when already in placing phase?");
             }
 
-            Instance.SetPhase((byte)Instance.phase + 1);
+            Instance.SetPhase((byte)Phase + 1);
         }
 
         private void SetPhase(int value)
         {
             if (value > (int)Phase.PlaceTransition2) value = 0;
-            phase = (Phase)value;
+            Phase = (Phase)value;
 
-            switch (phase)
+            switch (Phase)
             {
                 case Phase.Player2Draw:
                     break;
@@ -78,13 +79,14 @@ namespace Quatro.Core
 
         private void ToNextPhase()
         {
-            SetPhase((byte)phase + 1);
+            SetPhase((byte)Phase + 1);
         }
 
         private void Start()
         {
             camera = Camera.main;
-            phase = Phase.Player2Draw;
+            Phase = Phase.Player2Draw;
+            StartGame();
         }
 
         protected override void Awake()
@@ -108,88 +110,109 @@ namespace Quatro.Core
             }
         }
 
+        private bool hasGameStarted = false;
+
+        private void StartGame()
+        {
+            if (hasGameStarted) return;
+
+            hasGameStarted = true;
+            Phase = Phase.Player2Draw;
+        }
+
+        bool isDrawingBoardOpen = false;
+
+        public void ToggleDrawingBoard()
+        {
+            if (!IsDrawingPhase) return;
+            
+            isDrawingBoardOpen = !isDrawingBoardOpen;
+            string animName = isDrawingBoardOpen ? "Drawing" : "Board";
+            CameraAnimator.Play(animName);
+        }
+
         private void Update()
         {
-            if (phase != Phase.Player2Draw && phase != Phase.Player1Draw)
+            if (!hasGameStarted)
             {
-                if (Input.GetKeyDown(KeyCode.R))
-                {
-                    Debug.Log("Phase: " + phase);
-                    CameraAnimator.Play("Drawing");
+                return;
+            }
 
+            UIController.SetDebugText(Phase.ToString());
+
+            
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ToggleDrawingBoard();
+            }
+
+            switch (Phase)
+            {
+                case Phase.Player1Place:
+                case Phase.Player2Place:
+                    Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+
+                    if (CurrentPlacingPiece != null && lastHovered != null)
                     {
-                        ToNextPhase();
-                    }
-                }
-
-                switch (phase)
-                {
-                    case Phase.Player1Place:
-                    case Phase.Player2Place:
-                        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-
-                        if (CurrentPlacingPiece != null && lastHovered != null)
-                        {
-                            Vector3 hoverPosition = lastHovered.transform.position;
-                            hoverPosition.y = 3;
-                            CurrentPlacingPiece.transform.position = Vector3.Lerp(CurrentPlacingPiece.transform.position,
-                                hoverPosition,
-                                Time.deltaTime * 10f
-                            );
-                        }
-
-                        if (Physics.Raycast(ray, out RaycastHit hit, 1 << LayerMask.NameToLayer("Tile")))
-                        {
-                            Tile tile = hit.transform.GetComponentInParent<Tile>();
-
-
-                            if (!tile) break;
-
-
-                            if (tile.HasPiece) break;
-
-                            lastHovered = tile;
-                            CurrentHovering = tile;
-
-                            if (Input.GetMouseButtonDown(0))
-                            {
-                                confirmTile = lastHovered;
-                                ToNextPhase();
-                            }
-                        }
-                        else
-                        {
-                            CurrentHovering = null;
-                        }
-
-                        break;
-
-                    case Phase.Player2Draw:
-                        break;
-                    case Phase.Player1Draw:
-                        break;
-
-                    case Phase.PlaceTransition1:
-                    case Phase.PlaceTransition2:
-
+                        Vector3 hoverPosition = lastHovered.transform.position;
+                        hoverPosition.y = 3;
                         CurrentPlacingPiece.transform.position = Vector3.Lerp(CurrentPlacingPiece.transform.position,
-                            confirmTile.transform.position,
-                            Time.deltaTime * 10f);
+                            hoverPosition,
+                            Time.deltaTime * 10f
+                        );
+                    }
 
-                        if (Vector3.Distance(CurrentPlacingPiece.transform.position, confirmTile.transform.position) <
-                            0.01f)
+                    if (Physics.Raycast(ray, out RaycastHit hit, 1 << LayerMask.NameToLayer("Tile")))
+                    {
+                        Tile tile = hit.transform.GetComponentInParent<Tile>();
+
+
+                        if (!tile) break;
+
+
+                        if (tile.HasPiece) break;
+
+                        lastHovered = tile;
+                        CurrentHovering = tile;
+
+                        if (Input.GetMouseButtonDown(0))
                         {
-                            CurrentPlacingPiece.transform.position = confirmTile.transform.position;
-                            CurrentPlacingPiece.Place(confirmTile);
-                            CurrentPlacingPiece = null;
-                            confirmTile = null;
-                            CurrentHovering = null;
+                            confirmTile = lastHovered;
                             ToNextPhase();
                         }
+                    }
+                    else
+                    {
+                        CurrentHovering = null;
+                    }
 
-                        break;
-                }
+                    break;
+
+                case Phase.Player2Draw:
+                    break;
+                case Phase.Player1Draw:
+                    break;
+
+                case Phase.PlaceTransition1:
+                case Phase.PlaceTransition2:
+
+                    CurrentPlacingPiece.transform.position = Vector3.Lerp(CurrentPlacingPiece.transform.position,
+                        confirmTile.transform.position,
+                        Time.deltaTime * 10f);
+
+                    if (Vector3.Distance(CurrentPlacingPiece.transform.position, confirmTile.transform.position) <
+                        0.01f)
+                    {
+                        CurrentPlacingPiece.transform.position = confirmTile.transform.position;
+                        CurrentPlacingPiece.Place(confirmTile);
+                        CurrentPlacingPiece = null;
+                        confirmTile = null;
+                        CurrentHovering = null;
+                        ToNextPhase();
+                    }
+
+                    break;
             }
         }
 

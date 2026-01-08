@@ -66,7 +66,8 @@ namespace Quatro.Core
         {
             RotateBoard(90);
             Piece piece = PiecePrefab.Create();
-            foreach(LineRenderer lineRenderer in LineRenderers)
+
+            foreach (LineRenderer lineRenderer in LineRenderers)
             {
                 lineRenderer.transform.SetParent(piece.transform, false);
                 lineRenderer.transform.localPosition = Vector3.zero;
@@ -87,7 +88,11 @@ namespace Quatro.Core
                 ResetBoard();
             else if (Input.GetKeyDown(KeyCode.Space))
             {
-                ConfirmDrawing();
+                if (Board.IsDrawingPhase)
+                {
+                    if (inputLines.Count > 0)
+                        ConfirmDrawing();
+                }
             }
 
             if (Input.GetButtonDown("Fire1"))
@@ -101,27 +106,29 @@ namespace Quatro.Core
                 isPressedThisFrame = false;
             }
 
-            
+
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 
             if (!Physics.Raycast(ray, out RaycastHit hit, 100, 1 << LayerMask.NameToLayer("Drawing Board")))
             {
                 return;
             }
-            
+
             if (isPressedThisFrame)
-            { 
+            {
                 currentLine = new List<Vector3>();
                 inputLines.Add(currentLine);
 
 
                 GameObject lineRendererObject = Instantiate(LineRendererPrefab.gameObject, transform);
                 currentLineRenderer = lineRendererObject.GetComponent<LineRenderer>();
+                // currentLineRenderer.startColor = Color.white;
+                // currentLineRenderer.endColor = Color.white;
                 LineRenderers.Add(currentLineRenderer);
             }
 
             if (mouseDragging)
-            { 
+            {
                 currentLine.Add(-transform.position + hit.point);
 
                 currentLineRenderer.positionCount = currentLine.Count;
