@@ -5,39 +5,99 @@ using UnityEngine.Serialization;
 
 namespace Quatro.Core
 {
-    public enum Phase
+    public enum Phase : byte
     {
-        Player2Draw, Player1Place,
-        Player1Draw, Player2Place
+        Player2Draw,
+        Player1Place,
+        PlaceTransition1,
+        Player1Draw,
+        Player2Place,
+        PlaceTransition2,
     }
+
     public class Board : Singleton<Board>
     {
+        public const float PIECE_HOVER_HEIGHT = 3f;
         [SerializeField] private Tile TilePrefab;
         [SerializeField] private Piece PiecePrefab;
-        
+
         [SerializeField] private Animator CameraAnimator;
         [SerializeField] private Transform TileHolder;
         private new Camera camera;
 
         internal const float BOARD_SIZE = 16f;
-        internal const int DIMENSION = 4; 
+        internal const int DIMENSION = 4;
+        private Tile lastHovered;
         internal static Tile CurrentHovering;
+        internal static Piece CurrentPlacingPiece;
+
+        private Tile confirmTile;
+
+        private Phase phase;
 
         private static Tile[][] grid;
+
+
+        public static void ToNextPlacingPhase()
+        {
+            if (Instance.phase == Phase.Player1Place || Instance.phase == Phase.Player2Place)
+            {
+                throw new Exception("Going into placing phase when already in placing phase?");
+            }
+
+            Instance.SetPhase((byte)Instance.phase + 1);
+        }
+
+        private void SetPhase(int value)
+        {
+            if (value > (int)Phase.PlaceTransition2) value = 0;
+            phase = (Phase)value;
+
+            switch (phase)
+            {
+                case Phase.Player2Draw:
+                    break;
+                case Phase.Player1Place:
+                case Phase.Player2Place:
+                    if (CurrentPlacingPiece == null) throw new Exception("CurrentPlacingPiece == null");
+
+                    Instance.CameraAnimator.Play("Board");
+                    break;
+                case Phase.Player1Draw:
+                    break;
+
+                case Phase.PlaceTransition1:
+                case Phase.PlaceTransition2:
+                    Vector3 pos = confirmTile.transform.position;
+                    pos.y = PIECE_HOVER_HEIGHT;
+                    CurrentPlacingPiece.transform.position = pos;
+                    break;
+            }
+        }
+
+
+        private void ToNextPhase()
+        {
+            SetPhase((byte)phase + 1);
+        }
+
         private void Start()
         {
             camera = Camera.main;
+            phase = Phase.Player2Draw;
         }
 
         protected override void Awake()
         {
+            base.Awake();
             InitializeBoard();
         }
 
         private void InitializeBoard()
-        { 
+        {
             grid = new Tile[DIMENSION][];
-            for(int y = 0; y < DIMENSION; y++)
+
+            for (int y = 0; y < DIMENSION; y++)
             {
                 grid[y] = new Tile[DIMENSION];
 
@@ -50,28 +110,88 @@ namespace Quatro.Core
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (phase != Phase.Player2Draw && phase != Phase.Player1Draw)
             {
-                CameraAnimator.Play("Drawing");
-            }
-            
-            if (camera != null)
-            {
-                Ray ray = camera.ScreenPointToRay(Input.mousePosition); 
-                if (Physics.Raycast(ray, out RaycastHit hit, 1 << LayerMask.NameToLayer("Tile")))
+                if (Input.GetKeyDown(KeyCode.R))
                 {
-                    Tile tile = hit.transform.GetComponentInParent<Tile>();
-                    CurrentHovering = tile;
+                    Debug.Log("Phase: " + phase);
+                    CameraAnimator.Play("Drawing");
+
+                    {
+                        ToNextPhase();
+                    }
                 }
-                else
+
+                switch (phase)
                 {
-                    CurrentHovering = null;
+                    case Phase.Player1Place:
+                    case Phase.Player2Place:
+                        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+
+                        if (CurrentPlacingPiece != null && lastHovered != null)
+                        {
+                            Vector3 hoverPosition = lastHovered.transform.position;
+                            hoverPosition.y = 3;
+                            CurrentPlacingPiece.transform.position = Vector3.Lerp(CurrentPlacingPiece.transform.position,
+                                hoverPosition,
+                                Time.deltaTime * 10f
+                            );
+                        }
+
+                        if (Physics.Raycast(ray, out RaycastHit hit, 1 << LayerMask.NameToLayer("Tile")))
+                        {
+                            Tile tile = hit.transform.GetComponentInParent<Tile>();
+
+
+                            if (!tile) break;
+
+
+                            if (tile.HasPiece) break;
+
+                            lastHovered = tile;
+                            CurrentHovering = tile;
+
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                confirmTile = lastHovered;
+                                ToNextPhase();
+                            }
+                        }
+                        else
+                        {
+                            CurrentHovering = null;
+                        }
+
+                        break;
+
+                    case Phase.Player2Draw:
+                        break;
+                    case Phase.Player1Draw:
+                        break;
+
+                    case Phase.PlaceTransition1:
+                    case Phase.PlaceTransition2:
+
+                        CurrentPlacingPiece.transform.position = Vector3.Lerp(CurrentPlacingPiece.transform.position,
+                            confirmTile.transform.position,
+                            Time.deltaTime * 10f);
+
+                        if (Vector3.Distance(CurrentPlacingPiece.transform.position, confirmTile.transform.position) <
+                            0.01f)
+                        {
+                            CurrentPlacingPiece.transform.position = confirmTile.transform.position;
+                            CurrentPlacingPiece.Place(confirmTile);
+                            CurrentPlacingPiece = null;
+                            confirmTile = null;
+                            CurrentHovering = null;
+                            ToNextPhase();
+                        }
+
+                        break;
                 }
             }
-        }
 
         public Tile this[int x, int y] => grid[y][x];
-        
-        
     }
 }

@@ -7,6 +7,7 @@ namespace Quatro.Core
 {
     public class DrawingBoard : BoardBehavior
     {
+        [SerializeField] private Piece PiecePrefab;
         [SerializeField] private LineRenderer LineRendererPrefab;
 
         private new Camera camera;
@@ -61,13 +62,33 @@ namespace Quatro.Core
             }
         }
 
+        void ConfirmDrawing()
+        {
+            RotateBoard(90);
+            Piece piece = PiecePrefab.Create();
+            foreach(LineRenderer lineRenderer in LineRenderers)
+            {
+                lineRenderer.transform.SetParent(piece.transform, false);
+                lineRenderer.transform.localPosition = Vector3.zero;
+                lineRenderer.transform.localRotation = Quaternion.identity;
+            }
+
+            LineRenderers.Clear();
+            ResetBoard();
+
+            Board.CurrentPlacingPiece = piece;
+            Board.ToNextPlacingPhase();
+        }
+
         // Update is called once per frame
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 ResetBoard();
-            else if (Input.GetKey(KeyCode.Space))
-                RotateBoard(180f * Time.deltaTime);
+            else if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ConfirmDrawing();
+            }
 
             if (Input.GetButtonDown("Fire1"))
             {
@@ -80,8 +101,16 @@ namespace Quatro.Core
                 isPressedThisFrame = false;
             }
 
-            if (isPressedThisFrame)
+            
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+            if (!Physics.Raycast(ray, out RaycastHit hit, 100, 1 << LayerMask.NameToLayer("Drawing Board")))
             {
+                return;
+            }
+            
+            if (isPressedThisFrame)
+            { 
                 currentLine = new List<Vector3>();
                 inputLines.Add(currentLine);
 
@@ -92,13 +121,8 @@ namespace Quatro.Core
             }
 
             if (mouseDragging)
-            {
-                Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out RaycastHit hit, 1 << LayerMask.NameToLayer("Drawing Board")))
-                {
-                    currentLine.Add(-transform.position + hit.point);
-                }
+            { 
+                currentLine.Add(-transform.position + hit.point);
 
                 currentLineRenderer.positionCount = currentLine.Count;
                 currentLineRenderer.SetPositions(currentLine.ToArray());

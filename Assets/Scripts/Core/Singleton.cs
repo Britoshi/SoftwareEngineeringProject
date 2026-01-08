@@ -4,7 +4,7 @@ namespace Core
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
-        private static T Instance { get; set; }
+        internal static T Instance { get; set; }
         protected virtual void Awake()
         {
             if (Instance != null)
