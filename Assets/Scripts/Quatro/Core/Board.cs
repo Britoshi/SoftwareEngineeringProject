@@ -191,6 +191,7 @@ namespace Quatro.Core
                         break;
                 }
             }
+        }
 
         public Tile this[int x, int y] => grid[y][x];
     }
