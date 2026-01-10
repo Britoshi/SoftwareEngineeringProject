@@ -2,6 +2,7 @@ using Core;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Quatro.Core
 {
@@ -17,7 +18,14 @@ namespace Quatro.Core
 
     public class Board : Singleton<Board>
     {
-        public const float PIECE_HOVER_HEIGHT = 3f;
+        internal const float BOARD_SIZE = 16f;
+        internal const int DIMENSION = 4;
+
+        private static Tile[][] grid;
+        public static Phase Phase;
+
+        private const float PIECE_HOVER_HEIGHT = 3f;
+
         [SerializeField] private Tile TilePrefab;
         [SerializeField] private Piece PiecePrefab;
 
@@ -25,17 +33,14 @@ namespace Quatro.Core
         [SerializeField] private Transform TileHolder;
         private new Camera camera;
 
-        internal const float BOARD_SIZE = 16f;
-        internal const int DIMENSION = 4;
-        private Tile lastHovered;
         internal static Tile CurrentHovering;
         internal static Piece CurrentPlacingPiece;
 
+        [SerializeField] private Button ToggleBoardButton;
+        [SerializeField] private Button ConfirmButton;
+
         private Tile confirmTile;
-
-        public static Phase Phase;
-
-        private static Tile[][] grid;
+        private Tile lastHovered;
 
         public static bool IsDrawingPhase => Phase is Phase.Player2Draw or Phase.Player1Draw;
 
@@ -56,15 +61,21 @@ namespace Quatro.Core
 
             switch (Phase)
             {
-                case Phase.Player2Draw:
-                    break;
                 case Phase.Player1Place:
                 case Phase.Player2Place:
                     if (CurrentPlacingPiece == null) throw new Exception("CurrentPlacingPiece == null");
 
+                    //Edge Case. Leave this be
+                    isDrawingBoardOpen = false;
                     Instance.CameraAnimator.Play("Board");
+
+                    ToggleBoardButton.gameObject.SetActive(false);
+                    ConfirmButton.gameObject.SetActive(false);
                     break;
                 case Phase.Player1Draw:
+                case Phase.Player2Draw:
+                    ToggleBoardButton.gameObject.SetActive(true);
+                    ConfirmButton.gameObject.SetActive(true);
                     break;
 
                 case Phase.PlaceTransition1:
@@ -72,7 +83,11 @@ namespace Quatro.Core
                     Vector3 pos = confirmTile.transform.position;
                     pos.y = PIECE_HOVER_HEIGHT;
                     CurrentPlacingPiece.transform.position = pos;
+
+                    ToggleBoardButton.gameObject.SetActive(false);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -85,7 +100,6 @@ namespace Quatro.Core
         private void Start()
         {
             camera = Camera.main;
-            Phase = Phase.Player2Draw;
             StartGame();
         }
 
@@ -117,7 +131,7 @@ namespace Quatro.Core
             if (hasGameStarted) return;
 
             hasGameStarted = true;
-            Phase = Phase.Player2Draw;
+            SetPhase(0);
         }
 
         bool isDrawingBoardOpen = false;
@@ -125,7 +139,7 @@ namespace Quatro.Core
         public void ToggleDrawingBoard()
         {
             if (!IsDrawingPhase) return;
-            
+
             isDrawingBoardOpen = !isDrawingBoardOpen;
             string animName = isDrawingBoardOpen ? "Drawing" : "Board";
             CameraAnimator.Play(animName);
@@ -140,7 +154,7 @@ namespace Quatro.Core
 
             UIController.SetDebugText(Phase.ToString());
 
-            
+
             if (Input.GetKeyDown(KeyCode.R))
             {
                 ToggleDrawingBoard();
@@ -190,7 +204,6 @@ namespace Quatro.Core
                     break;
 
                 case Phase.Player2Draw:
-                    break;
                 case Phase.Player1Draw:
                     break;
 

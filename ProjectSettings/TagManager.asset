@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Confirm Button
+  - View Drawing Board Button
   layers:
   - Default
   - TransparentFX

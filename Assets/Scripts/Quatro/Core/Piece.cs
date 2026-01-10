@@ -8,6 +8,12 @@ namespace Quatro.Core
         // public Vector3 boardPosition;
         public bool Placed;
         public Tile AssignedTile;
+        /// <summary>
+        /// 0 = not placed.
+        /// 1 = Player 1
+        /// 2 = Player 2
+        /// </summary>
+        public int PlayerMaker = 0;
         
         public Piece Create()
         { 
@@ -21,6 +27,9 @@ namespace Quatro.Core
             tile.SetPiece(this);
             Placed = true;
             AssignedTile = tile;
+            if(Board.Phase == Phase.Player1Place) PlayerMaker = 1;
+            else if(Board.Phase == Phase.Player2Place) PlayerMaker = 2;
+            else throw new Exception("Critical Error took place where piece is being placed in non-placing phase.");
         }
 
         private void Update()

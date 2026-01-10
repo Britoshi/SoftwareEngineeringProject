@@ -29,6 +29,16 @@ public class BoardCamera : MonoBehaviour
         MoveCamera(degree);
     }
 
+    public void RotateCameraRight()
+    {
+        desiredDegree -= 45;
+    }
+
+    public void RotateCameraLeft()
+    {
+        desiredDegree += 45;
+    }
+
     private void MoveCamera(float angleDegrees)
     { 
         Vector3 center = Vector3.zero;

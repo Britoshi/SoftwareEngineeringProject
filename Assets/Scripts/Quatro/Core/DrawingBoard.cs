@@ -62,8 +62,11 @@ namespace Quatro.Core
             }
         }
 
-        void ConfirmDrawing()
+        public void ConfirmDrawing()
         {
+            if (!Board.IsDrawingPhase) return;
+            if (inputLines.Count <= 0) return;
+
             RotateBoard(90);
             Piece piece = PiecePrefab.Create();
 
@@ -88,11 +91,7 @@ namespace Quatro.Core
                 ResetBoard();
             else if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (Board.IsDrawingPhase)
-                {
-                    if (inputLines.Count > 0)
-                        ConfirmDrawing();
-                }
+                ConfirmDrawing();
             }
 
             if (Input.GetButtonDown("Fire1"))

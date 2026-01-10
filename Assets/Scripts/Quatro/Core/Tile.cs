@@ -7,11 +7,16 @@ namespace Quatro.Core
     {
         private bool hoveringCache;
         private bool IsMouseHovering => Board.CurrentHovering == this;
-        
+
+        /// <summary>
+        /// For Hovering Visual FX
+        /// </summary>
         public Renderer HoverRenderer;
+        /// <summary> X index of the board grid </summary>
         public int X;
+        /// <summary> Y index of the board grid </summary>
         public int Y;
-        
+        /// <summary> Assigned Piece. Null means nothing assigned yet. </summary>
         private Piece piece;
 
         /// <summary>
@@ -19,11 +24,14 @@ namespace Quatro.Core
         /// </summary> 
         public void SetPiece(Piece setPiece) => piece = setPiece;
 
-        public Piece GetPiece() => piece;
-
+        /// <summary> Does it have a piece? </summary>
         public bool HasPiece => piece != null;
 
+        /// <summary>
+        /// Tile World Position in the 3D world
+        /// </summary>
         private Vector3 originWorldPosition;
+        /// <summary> World Position dedicated for Hovering Visual FX </summary>
         private Vector3 hoveringWorldPosition;
         
         //Visual FX
