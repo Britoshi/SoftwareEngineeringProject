@@ -18,4 +18,28 @@ public class Tile : MonoBehaviour
     {
         
     }
+
+    public Tile GetClosestTileToMouse (){
+    //Make new variables for closest Tile and Distance
+    Tile closestTile = null;
+    float closestDistance = float.MaxValue;
+
+    //Loop through 2D array
+    for (int row = 0; row < 4; row++){
+        for (int col = 0; col < 4; col++){
+            Tile currentTile = Board.grid[row][col];
+            //Calculate distance of mouse Position to current Tile
+            Vector3 diff = mouseWorldPosition - currentTile.transform.position;
+            float distance = diff.sqrMagnitude;
+
+            //Update variables
+            if (distance < closestDistance){
+                closestTile = currentTile;
+                closestDistance = distance;
+            }
+        }
+    }
+    return closestTile;
+
+}
 }
