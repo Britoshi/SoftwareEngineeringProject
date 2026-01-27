@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Confirm Button
   - View Drawing Board Button
+  - Draw Board
   layers:
   - Default
   - TransparentFX
