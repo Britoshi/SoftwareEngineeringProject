@@ -35,6 +35,8 @@ namespace Quarto
         private const int DIAGONAL_LEFT = 0b1000_0100_0010_0001;
         private const int DIAGONAL_RIGHT = 0b0001_0010_0100_1000;
 
+        private int currentPlayer = 0;
+
         private int boardOccupancy = 0;
         private readonly TileData[] boardData = new TileData[16];
 
@@ -45,15 +47,19 @@ namespace Quarto
             boardOccupancy |= 1 << y * 4 + x;
             boardData[y * 4 + x] = data;
 
-            if (CheckWinCondition(out int winner))
+            if (CheckWinCondition())
             {
-                Debug.Log("Player " + winner + " wins!");
+                Debug.Log("Player " + currentPlayer + " wins!");
+            }
+            else
+            {
+                currentPlayer = (currentPlayer + 1) % 2;
             }
         }
 
         public TileData GetTileData(int x, int y) => boardData[y * 4 + x];
 
-        private bool CheckWinCondition(out int winner)
+        private bool CheckWinCondition()
         {
             foreach ((int dir, int index) in CheckForFill())
             {
@@ -72,15 +78,13 @@ namespace Quarto
                     check &= (byte)boardData[targetIndex];
                 }
 
-                //This means one or the other won AND there is a condition matching (INVERTED)
-                if ((check & 0b0011) <= 0 || check >> 2 <= 0) continue;
+                //No win condition
+                if (check == 0) continue;
 
-                //Return the winning tile
-                winner = check & 0b0011;
+                //Return the winning tile 
                 return true;
             }
 
-            winner = -1;
             return false;
         }
 

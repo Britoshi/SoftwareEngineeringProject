@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33dfa8d9-2bba-406a-ac1b-1d4590e59368" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Development Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Development Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Quarto/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Quarto/GameManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +134,7 @@
       <workItem from="1769395736736" duration="3447000" />
       <workItem from="1769481819791" duration="297000" />
       <workItem from="1769541422996" duration="1216000" />
-      <workItem from="1770065015506" duration="5584000" />
+      <workItem from="1770065015506" duration="6024000" />
     </task>
     <servers />
   </component>
