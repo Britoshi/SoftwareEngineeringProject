@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.britoworks": {
+      "version": "https://github.com/Britoshi/BritoWorks.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ebd5f0d7c04694ef7675a94d52b09fde98c11cc2"
+    },
     "com.singularitygroup.hotreload": {
       "version": "file:com.singularitygroup.hotreload",
       "depth": 0,
