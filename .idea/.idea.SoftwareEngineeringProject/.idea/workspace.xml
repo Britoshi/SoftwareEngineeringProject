@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33dfa8d9-2bba-406a-ac1b-1d4590e59368" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Quarto/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Quarto/GameManager.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/CanvasTransitionButton.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/CanvasTransitionButton.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SoftwareEngineeringProject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SoftwareEngineeringProject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Development Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Development Scene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Singleton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Singleton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Quarto/Tile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Quarto/Tile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +35,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Shaders/ColorThing.shader" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/CanvasTransitionButton.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/Debug/BigBoyButton.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.britoworks@ebd5f0d7c046/Runtime/BritoBehavior.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.britoworks@ebd5f0d7c046/Runtime/BritoExtension.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -134,7 +142,8 @@
       <workItem from="1769395736736" duration="3447000" />
       <workItem from="1769481819791" duration="297000" />
       <workItem from="1769541422996" duration="1216000" />
-      <workItem from="1770065015506" duration="6024000" />
+      <workItem from="1770065015506" duration="7146000" />
+      <workItem from="1770683132177" duration="1621000" />
     </task>
     <servers />
   </component>

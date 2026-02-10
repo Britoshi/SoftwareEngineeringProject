@@ -1,17 +1,14 @@
-using UnityEngine;
+using Core;
 
-namespace Quarto
+namespace UI
 {
-    public class Tile : MonoBehaviour
+    public class CanvasSceneManager : Singleton<CanvasSceneManager>
     {
-        public int X, Y;
-        public Piece Piece;
-        public bool IsOccupied => Piece != null;
-    
+        public float TransitionTime = 5f;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-        
+            
         }
 
         // Update is called once per frame

@@ -1,8 +1,9 @@
+using BritoWorks;
 using UnityEngine;
 
 namespace Core
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    public class Singleton<T> : BritoBehavior where T : BritoBehavior
     {
         internal static T Instance { get; set; }
         protected virtual void Awake()
