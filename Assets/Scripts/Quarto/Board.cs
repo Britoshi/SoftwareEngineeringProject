@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Quarto
 {
@@ -15,6 +16,11 @@ namespace Quarto
         public static Tile[][] Grid;
 
         private bool pieceInHand = false;
+        private bool waitingForMouseRelease = false; 
+        
+        private Color currentColor = Color.white;
+        public Button colorToggleButton;
+        
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -74,10 +80,13 @@ namespace Quarto
                 drawBoard.SetActive(showBoard);
             }
 
+            // Press return to confirm drawing as piece
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 ConfirmDrawing();
             }
+
+            
 
           
 
@@ -103,7 +112,9 @@ namespace Quarto
         {
             drawPoints = new List<List<Vector3>>();
             lineRenderers = new List<LineRenderer>();
-            
+            if (currentPiece != null) Destroy(currentPiece.gameObject);
+            currentColor = Color.white;
+
             currentPiece = new GameObject("Piece").AddComponent<Piece>();
             // currentPiece.transform.SetParent(gridInstanceHolder);
         }
@@ -130,6 +141,7 @@ namespace Quarto
             Vector3 min = Vector3.positiveInfinity;
             Vector3 max = Vector3.negativeInfinity;
 
+            // Find edges of the drawing 
             foreach (List<Vector3> stroke in drawPoints)
             {
                 foreach (Vector3 point in stroke)
@@ -147,41 +159,98 @@ namespace Quarto
 
             float scale = 1f / largestDimension;
             currentPiece.transform.localScale = new Vector3(scale, scale, scale);
+
+            Vector3 localCenter = new Vector3((min.x + max.x) / 2f, (min.y + max.y) / 2f, (min.z + max.z) / 2f);
+
+            // Offset all line points so the drawing is centered around zero
+            foreach (LineRenderer lr in lineRenderers)
+            {
+                Vector3[] positions = new Vector3[lr.positionCount];
+                lr.GetPositions(positions);
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    positions[i] -= localCenter;
+                }
+                lr.SetPositions(positions);
+            }
+
+            currentPiece.transform.position = currentPiece.transform.TransformPoint(localCenter);
         }    
+
+        // Toggles current color btwn white and black
+        public void ToggleColor()
+        {
+            if (currentColor == Color.white)
+            {
+                currentColor = Color.black;
+            }
+            else
+            {
+                currentColor = Color.white;
+            }
+        }
 
         // Handles the piece in hand by raycasting mouse position to move the piece and place 
         // it on a tile
         private void HandlePieceInHand()
         {
-            if (!pieceInHand || currentPiece == null) return;
+            if (!pieceInHand || currentPiece == null || showBoard) return;
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            bool click = Input.GetMouseButtonDown(0);
 
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                Debug.Log("Hit: " + hit.collider.gameObject.name + " at " + hit.point);
                 currentPiece.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
 
-                if (Input.GetMouseButtonDown(0) && hit.collider.GetComponent<Tile>() != null)
+                if (click)
                 {
-                    // Not reading the mouse click 
-                    Debug.Log("Left mouse button is being held down");
-                    Debug.Log("Clicked on tile: " + hit.collider.gameObject.name);
-                    Tile tile = hit.collider.GetComponent<Tile>();
-                    if (!tile.IsOccupied)
+                    Tile closest = GetClosestTileToMouse(hit.point);
+                    if (closest != null && !closest.IsOccupied)
                     {
-                        PlacePiece(tile);
+                        PlacePiece(closest);
                     }
                 }
             }
+        }
+
+        public Tile GetClosestTileToMouse(Vector3 mouseWorldPosition)
+        {
+            //Make new variables for closest Tile and Distance
+            Tile closestTile = null;
+            float closestDistance = float.MaxValue;
+
+            //Loop through 2D array
+            for (int row = 0; row < 4; row++)
+            {
+                for (int col = 0; col < 4; col++)
+                {
+                    Tile currentTile = Grid[row][col];
+                    //Calculate distance of mouse Position to current Tile
+                    Vector3 diff = mouseWorldPosition - currentTile.transform.position;
+                    float distance = diff.sqrMagnitude;
+
+                    //Update variables
+                    if (distance < closestDistance)
+                    {
+                        closestTile = currentTile;
+                        closestDistance = distance;
+                    }
+                }
+            }
+            return closestTile;
+
         }
 
         public void PlacePiece(Tile tile)
         {
             if (currentPiece == null) return;
 
+            // Place piece on tiles grid coordinates
             currentPiece.transform.position = new Vector3(tile.X, 0.5f, tile.Y);
             tile.Piece = currentPiece;
+            currentPiece = null;
+            waitingForMouseRelease = true;
 
             ResetDrawBoard();
         }
@@ -189,17 +258,31 @@ namespace Quarto
         private void HandleDrawOnBoard()
         {
             if (!showBoard) return;
+
+            // After placing piece wait for player to release mouse before they can draw again
+            if (waitingForMouseRelease)
+            {
+                if (!Input.GetMouseButton(0))
+                {
+                    waitingForMouseRelease = false;
+                }
+                else
+                {
+                    return;
+                }
+            }
             
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject line = Instantiate(LinePrefab, currentPiece.transform);
                 LineRenderer lr = line.GetComponent<LineRenderer>();
                 lr.useWorldSpace = false;
+                lr.material.SetColor("_Color", currentColor);
                 lineRenderers.Add(lr);
                 drawPoints.Add(new List<Vector3>());
             }
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && lineRenderers.Count > 0 && drawPoints.Count > 0)
             {
                 var currLine = lineRenderers[^1];
                 var currPoint = drawPoints[^1];
