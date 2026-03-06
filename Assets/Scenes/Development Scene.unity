@@ -1672,6 +1672,7 @@ GameObject:
   m_Component:
   - component: {fileID: 563155765}
   - component: {fileID: 563155764}
+  - component: {fileID: 563155766}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -1708,6 +1709,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &563155766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563155763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52d847c23bd73794c81bf670d14a2a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Quarto.HighlightTile
+  originalMaterial: {fileID: 2100000, guid: cac24f7ac1f0b1c44ba931951b37079d, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: 230532d9ae882be46a497084ccbfb690, type: 2}
 --- !u!1 &594311328
 GameObject:
   m_ObjectHideFlags: 0
