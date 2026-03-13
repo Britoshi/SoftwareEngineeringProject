@@ -1673,6 +1673,8 @@ GameObject:
   - component: {fileID: 563155765}
   - component: {fileID: 563155764}
   - component: {fileID: 563155766}
+  - component: {fileID: 563155767}
+  - component: {fileID: 563155768}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -1692,6 +1694,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d57c53e223538d4aad19b907945bea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Quarto.Board
+  piecePlaced: 0
+  drawingConfirmed: 0
   colorToggleButton: {fileID: 377359490}
   LinePrefab: {fileID: 3770961481443246877, guid: f04a03c1d209311469edc90d5d8561bc, type: 3}
 --- !u!4 &563155765
@@ -1721,8 +1725,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52d847c23bd73794c81bf670d14a2a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Quarto.HighlightTile
-  originalMaterial: {fileID: 2100000, guid: cac24f7ac1f0b1c44ba931951b37079d, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 230532d9ae882be46a497084ccbfb690, type: 2}
+--- !u!114 &563155767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563155763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b47de9bd42ab84b872b2a0d4e3f0c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Quarto.GameManager
+  hasWinner: 0
+--- !u!114 &563155768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563155763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bce69f95eba0a4a858fec70c839929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStateController
+  grid: {fileID: 0}
+  drawBoard: {fileID: 0}
+  board: {fileID: 0}
+  gameManager: {fileID: 0}
+  statusText: {fileID: 1639641776}
 --- !u!1 &594311328
 GameObject:
   m_ObjectHideFlags: 0

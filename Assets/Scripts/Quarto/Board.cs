@@ -17,6 +17,8 @@ namespace Quarto
 
         private bool pieceInHand = false;
         private bool waitingForMouseRelease = false; 
+        public bool piecePlaced = false;
+        public bool drawingConfirmed = false;
         
         private Color currentColor = Color.white;
         public Button colorToggleButton;
@@ -119,6 +121,12 @@ namespace Quarto
             // currentPiece.transform.SetParent(gridInstanceHolder);
         }
 
+        public void ResetGrid()
+        {
+            Destroy(gridInstanceHolder.gameObject);
+            Start();
+        }
+
         // This method is confirms the drawing by detaching the 
         // piece from the draw board, scaling it, and putting in player's hand
         private void ConfirmDrawing()
@@ -127,6 +135,8 @@ namespace Quarto
             ScalePieceToFitTile();
             pieceInHand = true;
             currentPiece.transform.position = new Vector3(5, 1, 0);
+            
+            drawingConfirmed = true;
 
             showBoard = false;
             drawBoard.SetActive(false);
@@ -251,6 +261,8 @@ namespace Quarto
             tile.Piece = currentPiece;
             currentPiece = null;
             waitingForMouseRelease = true;
+
+            piecePlaced = true;
 
             ResetDrawBoard();
         }

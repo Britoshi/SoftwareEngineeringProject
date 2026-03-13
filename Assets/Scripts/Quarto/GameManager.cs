@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Quarto
 {
+    
     public enum TileData : byte
     {
         Black = 0b0000_0001,
@@ -39,6 +40,13 @@ namespace Quarto
 
         private int boardOccupancy = 0;
         private readonly TileData[] boardData = new TileData[16];
+        
+        public bool hasWinner = false;
+
+        public bool BoardIsFull()
+        {
+            return boardOccupancy == 0b1111_1111_1111_1111;
+        }
 
         public void OccupyTile(int x, int y, TileData data)
         {
@@ -49,6 +57,7 @@ namespace Quarto
 
             if (CheckWinCondition())
             {
+                hasWinner = true;
                 Debug.Log("Player " + currentPlayer + " wins!");
             }
             else
