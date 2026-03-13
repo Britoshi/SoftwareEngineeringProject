@@ -1,6 +1,7 @@
 using BritoWorks;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace Quarto
 {
@@ -40,6 +41,9 @@ namespace Quarto
         private int boardOccupancy = 0;
         private readonly TileData[] boardData = new TileData[16];
 
+        public GameObject claimVictoryObject;
+        public TextMeshProUGUI victoryText;
+
         public void OccupyTile(int x, int y, TileData data)
         {
             //the tile is 4 by 4, so it'll move left depending on the x and y bit wise.
@@ -50,6 +54,7 @@ namespace Quarto
             if (CheckWinCondition())
             {
                 Debug.Log("Player " + currentPlayer + " wins!");
+              
             }
             else
             {
@@ -58,6 +63,68 @@ namespace Quarto
         }
 
         public TileData GetTileData(int x, int y) => boardData[y * 4 + x];
+
+        public void OccupyTile(int x, int y)
+        {
+            boardOccupancy |= 1 << y * 4 + x;
+
+            if (CheckWinConditionSimple())
+            {
+                Debug.Log("Player " + currentPlayer + " wins!");
+                ShowWinUI();
+            }
+            else
+            {
+                currentPlayer = (currentPlayer + 1) % 2;
+            }
+        }
+
+        // Shows claim victory UI
+        private void ShowWinUI()
+        {
+            if (claimVictoryObject != null)
+            {
+                claimVictoryObject.SetActive(true);
+            }
+        }
+
+        public void ClaimWin()
+        {
+            if (victoryText != null)
+            {
+                victoryText.gameObject.SetActive(true);
+                victoryText.text = "Player " + currentPlayer + " wins!";
+            }
+        }
+
+        // Checks if any row, column, or diagonal is 4 in a row
+        private bool CheckWinConditionSimple()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if ((boardOccupancy & HORIZONTAL[i]) == HORIZONTAL[i])
+                {
+                    return true;
+                }
+                if ((boardOccupancy & VERTICAL[i]) == VERTICAL[i])
+                {
+                    return true;
+                }
+            }
+            if ((boardOccupancy & DIAGONAL_LEFT) == DIAGONAL_LEFT)
+            {
+                return true;
+            }
+            if ((boardOccupancy & DIAGONAL_RIGHT) == DIAGONAL_RIGHT)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+                    
+        }
 
         private bool CheckWinCondition()
         {

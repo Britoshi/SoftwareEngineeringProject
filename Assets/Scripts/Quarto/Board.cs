@@ -20,12 +20,15 @@ namespace Quarto
         
         private Color currentColor = Color.white;
         public Button colorToggleButton;
-        
+
+        private GameManager gameManager;
+
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
             Grid = new Tile[4][];
+            gameManager = FindAnyObjectByType<GameManager>();
 
             drawBoard = GameObject.FindGameObjectWithTag("Draw Board");
             drawBoard.SetActive(false);
@@ -249,6 +252,7 @@ namespace Quarto
             // Place piece on tiles grid coordinates
             currentPiece.transform.position = new Vector3(tile.X, 0.5f, tile.Y);
             tile.Piece = currentPiece;
+            gameManager.OccupyTile(tile.X, tile.Y);
             currentPiece = null;
             waitingForMouseRelease = true;
 
