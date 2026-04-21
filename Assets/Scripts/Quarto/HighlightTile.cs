@@ -9,6 +9,8 @@ namespace Quarto
         private Renderer currentRenderer;
         private Material originalMaterial;
         
+        private Board board;
+        
         public Material highlightMaterial;
 
         void ClearHighlightedTile()
@@ -23,12 +25,20 @@ namespace Quarto
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            
+            board = FindAnyObjectByType<Board>();
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (board == null) return;
+
+            if (board.IsDrawingOrPlacing())
+            {
+                ClearHighlightedTile();
+                return;
+            }
+            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hits))

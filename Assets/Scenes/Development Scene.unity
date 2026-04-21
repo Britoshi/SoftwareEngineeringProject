@@ -1674,6 +1674,7 @@ GameObject:
   - component: {fileID: 563155764}
   - component: {fileID: 563155766}
   - component: {fileID: 563155767}
+  - component: {fileID: 563155768}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -1693,6 +1694,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d57c53e223538d4aad19b907945bea1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Quarto.Board
+  drawingConfirmed: 0
+  piecePlaced: 0
   colorToggleButton: {fileID: 377359490}
   LinePrefab: {fileID: 3770961481443246877, guid: f04a03c1d209311469edc90d5d8561bc, type: 3}
 --- !u!4 &563155765
@@ -1737,6 +1740,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Quarto.GameManager
   claimVictoryObject: {fileID: 699670982}
   victoryText: {fileID: 797341941}
+--- !u!114 &563155768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563155763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d6e960d0cec17448851df9e697fc1d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStateController
+  board: {fileID: 0}
+  gameManager: {fileID: 0}
+  statusText: {fileID: 1639641776}
 --- !u!1 &591798708
 GameObject:
   m_ObjectHideFlags: 0

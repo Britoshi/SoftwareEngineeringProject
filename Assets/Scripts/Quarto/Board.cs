@@ -18,6 +18,14 @@ namespace Quarto
         private bool pieceInHand = false;
         private bool waitingForMouseRelease = false; 
         
+        public bool drawingConfirmed  = false;
+        public bool piecePlaced = false;
+
+        public bool IsDrawingOrPlacing()
+        {
+            return showBoard || pieceInHand;
+        }
+        
         private Color currentColor = Color.white;
         public Button colorToggleButton;
 
@@ -102,6 +110,7 @@ namespace Quarto
                 cam.transform.eulerAngles.y - Input.GetAxis("Horizontal"), 0);
             HandleDrawOnBoard();
             HandlePieceInHand();
+            HandleTileClick();
 
         }
 
@@ -129,10 +138,33 @@ namespace Quarto
             currentPiece.transform.SetParent(null);
             ScalePieceToFitTile();
             pieceInHand = true;
+            drawingConfirmed = true;
             currentPiece.transform.position = new Vector3(5, 1, 0);
 
             showBoard = false;
             drawBoard.SetActive(false);
+        }
+        
+        private void HandleTileClick()
+        {
+            if (showBoard || pieceInHand) return;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+                {
+                    Tile tile = hit.collider.GetComponentInParent<Tile>();
+
+                    if (tile != null && !tile.IsOccupied)
+                    {
+                        Debug.Log("Tile clicked -> opening draw board");
+                        showBoard = true;
+                        drawBoard.SetActive(true);
+                    }
+                }
+            }
         }
 
         // Scaling piece to fit tile by finding the bounding
@@ -254,7 +286,9 @@ namespace Quarto
             tile.Piece = currentPiece;
             gameManager.OccupyTile(tile.X, tile.Y);
             currentPiece = null;
+            pieceInHand = false;
             waitingForMouseRelease = true;
+            piecePlaced = true;
 
             ResetDrawBoard();
         }
